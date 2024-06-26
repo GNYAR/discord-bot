@@ -17,14 +17,30 @@ async def on_ready():
 
 @bot.event
 async def on_message(msg):
+    # ignore direct messages
     if msg.guild is None:
         return
 
+    guild = msg.guild
+
+    # only work on specified channel
     global guild_channels
-    channel_id = guild_channels.get(msg.guild.id)
+    channel_id = guild_channels.get(guild.id)
     if msg.channel.id == channel_id and msg.author != bot.user:
         name = msg.author.nick or msg.author.global_name or msg.author.name
-        print(name, msg.content)
+        # check if user in a voice channel
+        if msg.author.voice is not None:
+            # connect to the voice channel
+            voice_channel = msg.author.voice.channel
+            if guild.voice_client is not None:
+                await guild.voice_client.move_to(voice_channel)
+            else:
+                await voice_channel.connect(self_deaf=True)
+
+            print(name, msg.content)
+
+        else:
+            await msg.reply("Please join a voice channel.")
 
     await bot.process_commands(msg)
 
@@ -33,7 +49,14 @@ async def on_message(msg):
 async def set(ctx):
     global guild_channels
     guild_channels[ctx.guild.id] = ctx.channel.id
-    await ctx.send(f"set channel ({ctx.channel.name})")
+    await ctx.send(f"Set channel. ({ctx.channel.name})")
+
+
+@bot.command()
+async def disconnect(ctx):
+    global guild_channels
+    if ctx.channel.id == guild_channels[ctx.guild.id]:
+        await ctx.voice_client.disconnect()
 
 
 bot.run(TOKEN)
