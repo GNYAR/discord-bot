@@ -1,5 +1,8 @@
+import os
+
 import discord
 from discord.ext import commands
+from gtts import gTTS
 
 TOKEN = "YOUR_TOKEN"
 
@@ -37,7 +40,15 @@ async def on_message(msg):
             else:
                 await voice_channel.connect(self_deaf=True)
 
-            print(name, msg.content)
+            # text to speak
+            txt = f"{name} 說 {msg.content}"
+            audio_name = f"{guild.id}.mp3"
+            tts = gTTS(txt, lang="zh-TW")
+            tts.save(audio_name)
+            guild.voice_client.play(
+                discord.FFmpegPCMAudio(audio_name),
+                after=lambda e: print(f"Player error: {e}") if e else None,
+            )
 
         else:
             await msg.reply("Please join a voice channel.")
@@ -56,6 +67,7 @@ async def set(ctx):
 async def disconnect(ctx):
     global guild_channels
     if ctx.channel.id == guild_channels[ctx.guild.id]:
+        os.remove(f"{ctx.guild.id}.mp3")
         await ctx.voice_client.disconnect()
 
 

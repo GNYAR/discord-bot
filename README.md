@@ -31,3 +31,13 @@ https://discordpy.readthedocs.io/en/stable/intro.html
 > for linux environments
 >
 > `sudo apt install libffi-dev libnacl-dev python3-dev`
+
+### Google Text-to-Speech
+
+https://github.com/pndurette/gTTS
+
+`pip install gTTs`
+
+> for linux environments
+>
+> `sudo apt install ffmpeg`
