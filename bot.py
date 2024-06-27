@@ -11,10 +11,12 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 guild_channels = {}
+guild_vars = {}
 
 
 @bot.event
 async def on_ready():
+    await bot.tree.sync()
     print("bot on")
 
 
@@ -25,11 +27,11 @@ async def on_message(msg):
         return
 
     guild = msg.guild
+    global guild_vars
+    x = guild_vars.get(guild.id)
 
     # only work on specified channel
-    global guild_channels
-    channel_id = guild_channels.get(guild.id)
-    if msg.channel.id == channel_id and msg.author != bot.user:
+    if x and msg.channel.id == x["channel_id"] and msg.author != bot.user:
         name = msg.author.nick or msg.author.global_name or msg.author.name
         # check if user in a voice channel
         if msg.author.voice is not None:
@@ -43,7 +45,7 @@ async def on_message(msg):
             # text to speak
             txt = f"{name} 說 {msg.content}"
             audio_name = f"{guild.id}.mp3"
-            tts = gTTS(txt, lang="zh-TW")
+            tts = gTTS(txt, lang=x["tts_lang"])
             tts.save(audio_name)
             guild.voice_client.play(
                 discord.FFmpegPCMAudio(audio_name),
@@ -56,19 +58,21 @@ async def on_message(msg):
     await bot.process_commands(msg)
 
 
-@bot.command()
-async def set(ctx):
-    global guild_channels
-    guild_channels[ctx.guild.id] = ctx.channel.id
-    await ctx.send(f"Set channel. ({ctx.channel.name})")
+@bot.tree.command(description="set channel for tts-bot")
+@discord.app_commands.describe(lang="tts language")
+async def set(interaction, lang: str):
+    channel_id = interaction.channel_id
+    global guild_vars
+    guild_vars[interaction.guild_id] = {"channel_id": channel_id, "tts_lang": lang}
+    resp = f"Set channel. ({interaction.channel.name}) tts-language: {lang}"
+    await interaction.response.send_message(resp)
 
 
-@bot.command()
-async def disconnect(ctx):
-    global guild_channels
-    if ctx.channel.id == guild_channels[ctx.guild.id]:
-        os.remove(f"{ctx.guild.id}.mp3")
-        await ctx.voice_client.disconnect()
+@bot.tree.command(description="disconnect from voice channel")
+async def disconnect(interaction):
+    os.remove(f"{interaction.guild_id}.mp3")
+    await interaction.guild.voice_client.disconnect()
+    await interaction.response.send_message("disconnected.")
 
 
 bot.run(TOKEN)
