@@ -1,10 +1,12 @@
 import os
+import json
 
 import discord
 from discord.ext import commands
 from gtts import gTTS
 
 TOKEN = "YOUR_TOKEN"
+STORAGE = "guild_vars.json"
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -17,6 +19,16 @@ guild_vars = {}
 @bot.event
 async def on_ready():
     await bot.tree.sync()
+
+    if os.path.isfile(STORAGE):
+        with open(STORAGE, "r") as f:
+            global guild_vars
+            guild_vars = json.load(f)
+    if guild_vars != {}:
+        print("guild_vars loaded")
+    else:
+        print("guild_vars is empty")
+
     print("bot on")
 
 
@@ -28,8 +40,7 @@ async def on_message(msg):
 
     guild = msg.guild
     global guild_vars
-    x = guild_vars.get(guild.id)
-
+    x = guild_vars.get(str(guild.id))
     # only work on specified channel
     if x and msg.channel.id == x["channel_id"] and msg.author != bot.user:
         name = msg.author.nick or msg.author.global_name or msg.author.name
@@ -61,9 +72,15 @@ async def on_message(msg):
 @bot.tree.command(description="set channel for tts-bot")
 @discord.app_commands.describe(lang="tts language")
 async def set(interaction, lang: str):
-    channel_id = interaction.channel_id
     global guild_vars
-    guild_vars[interaction.guild_id] = {"channel_id": channel_id, "tts_lang": lang}
+    guild_vars[interaction.guild_id] = {
+        "channel_id": interaction.channel_id,
+        "tts_lang": lang,
+    }
+
+    with open(STORAGE, "w") as f:
+        json.dump(guild_vars, f)
+
     resp = f"Set channel. ({interaction.channel.name}) tts-language: {lang}"
     await interaction.response.send_message(resp)
 
