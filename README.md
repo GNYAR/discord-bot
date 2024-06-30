@@ -6,17 +6,13 @@
 
 1. Go [Discord Developer Portal](https://discord.com/developers/applications).
 2. Create an application.
-3. Generate a token and paste on `bot.py`.
+3. Generate a token and set environment variable `TOKEN`.
    > Bot (SETTINGS) → Build-A-Bot → TOKEN
    >
-   > bot.py
+   > `.env`
    >
-   > ```py
-   > import discord
-   > from discord.ext import commands
-   >
-   > TOKEN = "YOUR_TOKEN"
-   > ...
+   > ```
+   > TOKEN=YOUR_TOKEN
    > ```
 4. Set `MESSAGE CONTENT INTENT` on.
    > Bot (SETTINGS) → Privileged Gateway Intents → MESSAGE CONTENT INTENT

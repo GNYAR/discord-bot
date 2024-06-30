@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from gtts import gTTS
 
-TOKEN = "YOUR_TOKEN"
+TOKEN = os.environ["TOKEN"]
 STORAGE = "guild_vars.json"
 
 intents = discord.Intents.default()
