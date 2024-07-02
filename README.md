@@ -2,6 +2,10 @@
 
 ## Setup
 
+### dotenv
+
+`pip install python-dotenv`
+
 ### Discord Developer Application
 
 1. Go [Discord Developer Portal](https://discord.com/developers/applications).

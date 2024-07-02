@@ -4,8 +4,10 @@ import json
 import discord
 from discord.ext import commands
 from gtts import gTTS
+from dotenv import load_dotenv
 
-TOKEN = os.environ["TOKEN"]
+load_dotenv()
+TOKEN = os.getenv("TOKEN")
 STORAGE = "guild_vars.json"
 
 intents = discord.Intents.default()
