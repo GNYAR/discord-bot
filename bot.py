@@ -20,11 +20,11 @@ guild_vars = {}
 
 @bot.event
 async def on_ready():
+    global guild_vars
     await bot.tree.sync()
 
     if os.path.isfile(STORAGE):
         with open(STORAGE, "r") as f:
-            global guild_vars
             guild_vars = json.load(f)
     if guild_vars != {}:
         print("guild_vars loaded")
@@ -75,7 +75,7 @@ async def on_message(msg):
 @discord.app_commands.describe(lang="tts language")
 async def set(interaction, lang: str):
     global guild_vars
-    guild_vars[interaction.guild_id] = {
+    guild_vars[str(interaction.guild_id)] = {
         "channel_id": interaction.channel_id,
         "tts_lang": lang,
     }
