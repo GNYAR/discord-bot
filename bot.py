@@ -82,6 +82,11 @@ async def langs(interaction):
 @bot.tree.command(description="set channel for tts-bot")
 @discord.app_commands.describe(lang="tts language")
 async def set(interaction, lang: str):
+    lang_line = f"tts-language: `{lang}`"
+    if lang not in tts_langs():
+        lang = "zh-TW"
+        lang_line = f"lang not found. (default: `{lang}`)"
+
     global guild_vars
     guild_vars[str(interaction.guild_id)] = {
         "channel_id": interaction.channel_id,
@@ -91,7 +96,7 @@ async def set(interaction, lang: str):
     with open(STORAGE, "w") as f:
         json.dump(guild_vars, f)
 
-    resp = f"Set channel. ({interaction.channel.name}) tts-language: {lang}"
+    resp = f"Set channel. ({interaction.channel.name})\n{lang_line}"
     await interaction.response.send_message(resp)
 
 
