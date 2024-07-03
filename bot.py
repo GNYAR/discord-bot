@@ -89,9 +89,15 @@ async def set(interaction, lang: str):
 
 @bot.tree.command(description="disconnect from voice channel")
 async def disconnect(interaction):
-    os.remove(f"{interaction.guild_id}.mp3")
-    await interaction.guild.voice_client.disconnect()
-    await interaction.response.send_message("disconnected.")
+    filename = f"{interaction.guild_id}.mp3"
+    if os.path.isfile(filename):
+        os.remove(filename)
+
+    if interaction.guild.voice_client is None:
+        await interaction.response.send_message("not in any voice channel.")
+    else:
+        await interaction.guild.voice_client.disconnect()
+        await interaction.response.send_message("disconnected.")
 
 
 bot.run(TOKEN)
