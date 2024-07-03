@@ -4,6 +4,7 @@ import json
 import discord
 from discord.ext import commands
 from gtts import gTTS
+from gtts.lang import tts_langs
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -69,6 +70,13 @@ async def on_message(msg):
             await msg.reply("Please join a voice channel.")
 
     await bot.process_commands(msg)
+
+
+@bot.tree.command(description="languages Google Text-to-Speech supports")
+async def langs(interaction):
+    lines = list(map(lambda x: "`{}`\t{}".format(*x), tts_langs().items()))
+    resp = "\n".join(lines)
+    await interaction.response.send_message(resp)
 
 
 @bot.tree.command(description="set channel for tts-bot")
