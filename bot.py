@@ -79,7 +79,7 @@ async def langs(interaction):
     await interaction.response.send_message(resp)
 
 
-@bot.tree.command(description="set channel for tts-bot")
+@bot.tree.command(description="set language and channel for text-to-speech")
 @discord.app_commands.describe(lang="tts language")
 async def set(interaction, lang: str):
     lang_line = f"tts-language: `{lang}`"

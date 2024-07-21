@@ -1,10 +1,48 @@
 # discord-bot
 
+Make discord more convenient.
+
+features: text to speech
+
+## Features
+
+### text to speech
+
+Helping user to speak without microphone.
+
+To use this feature, please join a voice channel and send the message in the specified channel. The bot will join your voice channel automatically.
+
+#### `/langs`
+
+List the languages Google Text-to-Speech supports.
+
+_\<lang>&nbsp;&nbsp;&nbsp;&nbsp;\<name>_
+
+```
+af    Afrikaans
+am    Amharic
+ar    Arabic
+...
+```
+
+#### `/set`
+
+Set language and the channel to which the command is sent for text-to-speech feature.
+
+**_parameters:_**
+
+**_\<lang>_** a language Google Text-to-Speech supports (default: zh-TW)
+
+#### `/disconnect`
+
+Make the bot disconnect from voice channel
+
 ## Setup
 
-### dotenv
-
-`pip install python-dotenv`
+- Discord Developer Application
+- dotenv
+- discord.py
+- Google Text-to-Speech
 
 ### Discord Developer Application
 
@@ -21,6 +59,10 @@
 4. Set `MESSAGE CONTENT INTENT` on.
    > Bot (SETTINGS) → Privileged Gateway Intents → MESSAGE CONTENT INTENT
 5. Invite the bot to your server.
+
+### dotenv
+
+`pip install python-dotenv`
 
 ### discord.py
 
