@@ -25,13 +25,25 @@ ar    Arabic
 ...
 ```
 
-#### `/set`
+#### `/set <lang>`
 
 Set language and the channel to which the command is sent for text-to-speech feature.
 
 **_parameters:_**
 
 **_\<lang>_** a language Google Text-to-Speech supports (default: zh-TW)
+
+### youtube audio
+
+#### `/yt <url>`
+
+Play audio from youtube.
+
+**_parameters:_**
+
+**_\<url>_** youtube url to play
+
+### Generic
 
 #### `/disconnect`
 
@@ -42,7 +54,9 @@ Make the bot disconnect from voice channel
 - Discord Developer Application
 - dotenv
 - discord.py
+- ffmpeg
 - Google Text-to-Speech
+- pytube
 
 ### Discord Developer Application
 
@@ -70,6 +84,14 @@ https://discordpy.readthedocs.io/en/stable/intro.html
 
 `python3 -m pip install -U discord.py[voice]`
 
+### ffmpeg
+
+https://ffmpeg.org/download.html
+
+1. download `ffmpeg-release-full.7z`
+2. extract
+3. add `bin` path to environment variables
+
 > for linux environments
 >
 > `sudo apt install libffi-dev libnacl-dev python3-dev`
@@ -83,3 +105,7 @@ https://github.com/pndurette/gTTS
 > for linux environments
 >
 > `sudo apt install ffmpeg`
+
+### pytube
+
+`pip install pytubefix`

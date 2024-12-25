@@ -6,23 +6,23 @@ from discord.ext import commands
 from gtts import gTTS
 from gtts.lang import tts_langs
 from dotenv import load_dotenv
+from pytubefix import YouTube
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 STORAGE = "guild_vars.json"
 
 
-async def join_msg_voice(msg):
-    if msg.author.voice is not None:
+async def join_user_voice(user):
+    if user.voice is not None:
         # connect to the voice channel
-        voice_channel = msg.author.voice.channel
-        guild = msg.guild
+        voice_channel = user.voice.channel
+        guild = user.guild
         if guild.voice_client is not None:
             await guild.voice_client.move_to(voice_channel)
         else:
             await voice_channel.connect(self_deaf=True)
         return True
-    await msg.reply("Please join a voice channel.")
     return False
 
 
@@ -42,10 +42,13 @@ guild_vars = {}
 
 
 @bot.event
-async def on_ready():
-    global guild_vars
+async def setup_hook():
     await bot.tree.sync()
 
+
+@bot.event
+async def on_ready():
+    global guild_vars
     if os.path.isfile(STORAGE):
         with open(STORAGE, "r") as f:
             guild_vars = json.load(f)
@@ -69,7 +72,7 @@ async def on_message(msg):
     # only work on specified channel
     if x and msg.channel.id == x["channel_id"] and msg.author != bot.user:
         name = msg.author.nick or msg.author.global_name or msg.author.name
-        if await join_msg_voice(msg):
+        if await join_user_voice(msg.author):
             # text to speak
             txt = f"{name} 說 {msg.content}"
             audio_name = f"{guild.id}.mp3"
@@ -77,6 +80,8 @@ async def on_message(msg):
             tts.save(audio_name)
 
             play_audio(guild, audio_name)
+        else:
+            await msg.reply("Please join a voice channel.")
 
     await bot.process_commands(msg)
 
@@ -120,6 +125,26 @@ async def disconnect(interaction):
     else:
         await interaction.guild.voice_client.disconnect()
         await interaction.response.send_message("disconnected.")
+
+
+@bot.tree.command(description="play audio from youtube")
+@discord.app_commands.describe(url="youtube link")
+async def yt(interaction, url: str):
+    if await join_user_voice(interaction.user):
+        guild = interaction.guild
+        filename = f"{guild.id}_yt.mp3"
+        resp = ""
+        try:
+            yt = YouTube(url)
+        except Exception as err:
+            await interaction.response.send_message(f"ERROR: `{err}`")
+        else:
+            resp = f"Playing `{yt.title}` from youtube."
+            await interaction.response.send_message(resp)
+            yt.streams.filter(only_audio=True).first().download(filename=filename)
+            play_audio(guild, filename)
+    else:
+        await interaction.response.send_message("Please join a voice channel.")
 
 
 bot.run(TOKEN)
