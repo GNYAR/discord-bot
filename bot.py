@@ -27,6 +27,7 @@ async def join_user_voice(user):
 
 
 def play_audio(guild, filename):
+    guild.voice_client.stop()
     guild.voice_client.play(
         discord.FFmpegPCMAudio(filename),
         after=lambda e: print(f"Audio player error: {e}") if e else None,
