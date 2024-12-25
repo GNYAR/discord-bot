@@ -35,6 +35,10 @@ Set language and the channel to which the command is sent for text-to-speech fea
 
 ### youtube audio
 
+Playing audio by youtube url.
+
+> Not support play queue yet. Will be preemptive when a new request sent.
+
 #### `/yt <url>`
 
 Play audio from youtube.
