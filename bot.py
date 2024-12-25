@@ -11,6 +11,28 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 STORAGE = "guild_vars.json"
 
+
+async def join_msg_voice(msg):
+    if msg.author.voice is not None:
+        # connect to the voice channel
+        voice_channel = msg.author.voice.channel
+        guild = msg.guild
+        if guild.voice_client is not None:
+            await guild.voice_client.move_to(voice_channel)
+        else:
+            await voice_channel.connect(self_deaf=True)
+        return True
+    await msg.reply("Please join a voice channel.")
+    return False
+
+
+def play_audio(guild, filename):
+    guild.voice_client.play(
+        discord.FFmpegPCMAudio(filename),
+        after=lambda e: print(f"Audio player error: {e}") if e else None,
+    )
+
+
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
@@ -47,27 +69,14 @@ async def on_message(msg):
     # only work on specified channel
     if x and msg.channel.id == x["channel_id"] and msg.author != bot.user:
         name = msg.author.nick or msg.author.global_name or msg.author.name
-        # check if user in a voice channel
-        if msg.author.voice is not None:
-            # connect to the voice channel
-            voice_channel = msg.author.voice.channel
-            if guild.voice_client is not None:
-                await guild.voice_client.move_to(voice_channel)
-            else:
-                await voice_channel.connect(self_deaf=True)
-
+        if await join_msg_voice(msg):
             # text to speak
             txt = f"{name} 說 {msg.content}"
             audio_name = f"{guild.id}.mp3"
             tts = gTTS(txt, lang=x["tts_lang"])
             tts.save(audio_name)
-            guild.voice_client.play(
-                discord.FFmpegPCMAudio(audio_name),
-                after=lambda e: print(f"Player error: {e}") if e else None,
-            )
 
-        else:
-            await msg.reply("Please join a voice channel.")
+            play_audio(guild, audio_name)
 
     await bot.process_commands(msg)
 
